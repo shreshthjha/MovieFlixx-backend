@@ -1,0 +1,95 @@
+package com.movieflix.auth.services;
+
+import java.time.Instant;
+import java.util.UUID;
+
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.movieflix.auth.entities.RefreshToken;
+import com.movieflix.auth.entities.User;
+import com.movieflix.auth.repositories.RefreshTokenRepository;
+import com.movieflix.auth.repositories.UserRepository;
+
+@Service
+public class RefreshTokenService {
+		
+	private  final UserRepository userRepository;
+	
+	private final RefreshTokenRepository refreshTokenRepository;
+	
+	
+	
+	public RefreshTokenService(UserRepository userRepository, RefreshTokenRepository refreshTokenRepository) {
+		super();
+		this.userRepository = userRepository;
+		this.refreshTokenRepository = refreshTokenRepository;
+	}
+
+
+	public RefreshToken createRefreshToken(String username) {
+	    User user = userRepository.findByEmail(username)
+	            .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
+
+	    try {
+	        // Generate new refresh token
+	        String newToken = UUID.randomUUID().toString();
+	        long refreshTokenValidity = 30 * 1000; // 30 seconds validity for testing
+
+	        RefreshToken refreshToken = refreshTokenRepository.findByUser(user)
+	                .map(existingToken -> {
+	                    // Update existing token
+	                    existingToken.setRefreshToken(newToken);
+	                    existingToken.setExpirationTime(Instant.now().plusMillis(refreshTokenValidity));
+	                    return existingToken;
+	                }).orElseGet(() -> {
+	                    // Create new token if user doesn't have one
+	                    return RefreshToken.builder()
+	                            .refreshToken(newToken)
+	                            .expirationTime(Instant.now().plusMillis(refreshTokenValidity))
+	                            .user(user)
+	                            .build();
+	                });
+
+	        refreshTokenRepository.save(refreshToken); // Save the updated/new token
+	        System.out.println("New Refresh Token: " + newToken); // Debugging
+
+	        return refreshToken;
+	    } catch (Exception e) {
+	        throw new RuntimeException("Error creating refresh token", e);
+	    }
+	}
+
+
+	
+	public RefreshToken verifyRefreshToken(String  refreshToken) {
+		RefreshToken refToken = refreshTokenRepository.findByRefreshToken(refreshToken)
+								.orElseThrow(()-> new RuntimeException("Refresh Token Not Found"));
+		
+		if(refToken.getExpirationTime().compareTo(Instant.now()) < 0) {
+			refreshTokenRepository.delete(refToken);
+			throw new RuntimeException("Refresh Token Expired");
+		}
+		
+		return refToken;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+}

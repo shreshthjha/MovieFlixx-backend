@@ -1,0 +1,13 @@
+package com.movieflix.exceptions;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+	
+	public ProblemDetail HandleMovieNotFoundException(MovieNotFoundException rf) {
+		return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,rf.getMessage());	
+	}
+}

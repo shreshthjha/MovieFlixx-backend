@@ -1,0 +1,5 @@
+package com.movieflix.auth.entities;
+
+public class RefreshToken {
+
+}
