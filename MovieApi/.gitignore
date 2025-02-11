@@ -1,33 +1,24 @@
-HELP.md
-target/
-!.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# Ignore compiled files and build directories
+/target/
+/bin/
+/build/
 
-### STS ###
-.apt_generated
+# Ignore logs and temporary files
+*.log
+*.tmp
+hs_err_pid*
+
+# Ignore IDE and editor specific files
+.idea/
 .classpath
-.factorypath
 .project
-.settings
-.springBeans
-.sts4-cache
+.settings/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
+# Ignore Maven and Gradle directories
+/.mvn/
+/.gradle/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
-
-### VS Code ###
-.vscode/
+# Ignore environment configuration files (secrets)
+application.properties
+application.yml
+.env

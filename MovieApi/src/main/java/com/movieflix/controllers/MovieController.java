@@ -65,9 +65,9 @@ public class MovieController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/update/{movieId}")
 	public ResponseEntity<MovieDto> UpdateMovieHandler(@PathVariable Integer movieId,
-													   @RequestPart MultipartFile file,
+													   @RequestPart(required = false) MultipartFile file,
 													   @RequestPart String movieDtoObj) throws IOException {
-		if(file.isEmpty()) file = null;
+		if(file == null || file.isEmpty()) file = null;
 		MovieDto movieDto = convertToMovieDto(movieDtoObj);
 		return ResponseEntity.ok(movieService.updateMovie(movieId,movieDto , file));
 	}
